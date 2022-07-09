@@ -3,22 +3,27 @@ import { getRandomInt } from '@shared/functions';
 import orm from './mock-orm';
 
 
-
-/**
- * Get one user.
- * 
- * @param email 
- * @returns 
- */
-async function getOne(email: string): Promise<IUser | null> {
-    const db = await orm.openDb();
-    for (const user of db.users) {
-        if (user.email === email) {
-            return user;
-        }
+export default class UserRepo {
+    async decrementShareClaims(userId: number): Promise<void> {
+        // TODO
     }
-    return null;
+    /**
+     * Get one user.
+     * 
+     * @param email 
+     * @returns 
+     */
+    async getOne(userId: string): Promise<IUser | null> {
+        const db = await orm.openDb();
+        for (const user of db.users) {
+            if (user.email === userId) {
+                return user;
+            }
+        }
+        return null;
+    }
 }
+
 
 
 /**
@@ -97,11 +102,11 @@ async function deleteOne(id: number): Promise<void> {
 
 
 // Export default
-export default {
-    getOne,
-    persists,
-    getAll,
-    add,
-    update,
-    delete: deleteOne,
-} as const;
+// export default {
+//     getOne,
+//     persists,
+//     getAll,
+//     add,
+//     update,
+//     delete: deleteOne,
+// } as const;

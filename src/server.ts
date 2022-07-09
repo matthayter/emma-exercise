@@ -6,6 +6,12 @@ import path from 'path';
 import express, { NextFunction, Request, Response } from 'express';
 // import StatusCodes from 'http-status-codes';
 import 'express-async-errors';
+import "./repos/firmShares";
+import {DbFirmShares, MockFirmShares} from './repos/firmShares';
+import Broker from './services/broker-mock';
+import UserRepo from '@repos/user-repo';
+import "./services/broker-mock";
+import { App } from './app';
 
 // import apiRouter from './routes/api';
 // import logger from 'jet-logger';
@@ -35,47 +41,32 @@ app.use(express.urlencoded({extended: true}));
 //     app.use(helmet());
 // }
 
+// Production dependencies.
+const firmShares = new DbFirmShares();
+const broker = new Broker();
+const usersRepo = new UserRepo();
+const prodApp = new App(firmShares, broker, usersRepo);
 
-/***********************************************************************************
- *                         API routes and error handling
- **********************************************************************************/
-
-// Add api router
-// app.use('/api', apiRouter);
-
-// Error handling
-// app.use((err: Error | CustomError, _: Request, res: Response, __: NextFunction) => {
-//     logger.err(err, true);
-//     const status = (err instanceof CustomError ? err.HttpStatus : StatusCodes.BAD_REQUEST);
-//     return res.status(status).json({
-//         error: err.message,
-//     });
-// });
-
-
-/***********************************************************************************
- *                                  Front-end content
- **********************************************************************************/
-
-// Set views dir
-// const viewsDir = path.join(__dirname, 'views');
-// app.set('views', viewsDir);
-
-// Set static dir
-// const staticDir = path.join(__dirname, 'public');
-// app.use(express.static(staticDir));
-
-// Serve index.html file
-// app.get('*', (_: Request, res: Response) => {
-//     // res.sendFile('index.html', {root: viewsDir});
-//     res.send({});
-// });
-
-app.post("/claim-free-share", (_: Request, res: Response) => {
-    // res.sendFile('index.html', {root: viewsDir});
-    res.send("Yep that works.");
+app.post("/claim-free-share", async (req: Request, res: Response) => {
+    // Normally, the user would come from an Auth middleware
+    const userId: string = req.body["userId"];
+    const result = await prodApp.claimFreeShare(userId);
+    switch (result.result) {
+        case "user_not_found":
+            res.sendStatus(404); // Or something appropriate to the Auth flows
+            break;
+        case "no_shares_available":
+            res.setHeader("Retry-After", result.retryAfter)
+            res.sendStatus(503);
+            break;
+        case "unhandled_error":
+            res.sendStatus(500);
+            break;
+        case "ok":
+            res.sendStatus(200);
+            break;
+    }
 });
-
 
 // Export here and start in a diff file (for testing).
 export default app;
