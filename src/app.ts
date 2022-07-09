@@ -1,11 +1,11 @@
 import { IFirmShares } from "@repos/firmShares";
 import UserRepo from "@repos/user-repo";
-import Broker from "@services/broker-mock";
+import { MockBroker } from "@services/broker-mock";
 
 export class App {
     constructor(
         private firmShares: IFirmShares,
-        private broker: Broker,
+        private broker: MockBroker,
         private usersRepo: UserRepo,
     ) {}
 
