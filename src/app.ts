@@ -11,7 +11,7 @@ export class App {
 
     async claimFreeShare(userId: string): Promise<ClaimFreeShareResult> {
         // Normally, the user would come from an Auth middleware
-        const user = await this.usersRepo.getOne(userId);
+        const user = await this.usersRepo.getById(userId);
         if (!user) {
             return {result: "user_not_found"}
         }

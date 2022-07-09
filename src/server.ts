@@ -7,7 +7,7 @@ import express, { NextFunction, Request, Response } from 'express';
 // import StatusCodes from 'http-status-codes';
 import 'express-async-errors';
 import "./repos/firmShares";
-import {DbFirmShares, MockFirmShares} from './repos/firmShares';
+import {FirmSharesJsonDb, MockFirmShares} from './repos/firmShares';
 import { MockBroker } from './services/broker-mock';
 import UserRepo from '@repos/user-repo';
 import "./services/broker-mock";
@@ -42,7 +42,7 @@ app.use(express.urlencoded({extended: true}));
 // }
 
 // Production dependencies.
-const firmShares = new DbFirmShares();
+const firmShares = new FirmSharesJsonDb();
 const broker = new MockBroker();
 const usersRepo = new UserRepo();
 const prodApp = new App(firmShares, broker, usersRepo);

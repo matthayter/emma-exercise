@@ -1,23 +1,34 @@
+import { shuffle } from '@shared/functions';
+import orm from './mock-orm';
 
 export interface IFirmShares {
     takeRandomShare(): Promise<string | null>;
-
-    getPurchaseLock(): Promise<boolean>;
-    releasePurchaseLock(): Promise<void>;
+    addRecordOfPurchases(purchases: {symbol: string, price: number, quantity: number}[]): Promise<void>;
 }
 
-export class DbFirmShares implements IFirmShares {
+export class FirmSharesJsonDb implements IFirmShares {
     async takeRandomShare(): Promise<string | null> {
-        // TODO
-        return Promise.resolve(null);
+        const db = await orm.openDb();
+        const nextShare = (db.sharesAvailable as string[]).shift() || null;
+        await orm.saveDb(db);
+        return nextShare;
     }
-    async getPurchaseLock(): Promise<boolean> {
-        // TODO
-        return false;
+    // Strategy: Make a list of the symbols of each individual share purchased, then shuffle the list.
+    // When allocating a share, just pop off the front of the 'queue'.
+    async addRecordOfPurchases(purchases: {symbol: string, price: number, quantity: number}[]): Promise<void> {
+        const db = await orm.openDb();
+        const sharesAvailable = (db.sharesAvailable as string[]);
+        const newShares: string[] = [];
+        for (const purchase of purchases) {
+            for (let i = 0; i < purchase.quantity; i++) {
+                newShares.push(purchase.symbol);
+            }
+        }
+        shuffle(newShares);
+        db.sharesAvailable = sharesAvailable.concat(newShares);
+        await orm.saveDb(db);
     }
-    async releasePurchaseLock(): Promise<void> {
-        // TODO
-    }
+
 }
 
 export class MockFirmShares implements IFirmShares {
@@ -26,11 +37,6 @@ export class MockFirmShares implements IFirmShares {
     async takeRandomShare(): Promise<string | null> {
         return Promise.resolve(this.shares.shift() || null);
     }
-    async getPurchaseLock(): Promise<boolean> {
-        // TODO
-        return false;
-    }
-    async releasePurchaseLock(): Promise<void> {
-        // TODO
+    async addRecordOfPurchases(purchases: {symbol: string, price: number, quantity: number}[]): Promise<void> {
     }
 }

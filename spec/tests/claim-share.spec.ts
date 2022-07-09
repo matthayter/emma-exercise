@@ -1,3 +1,4 @@
+import { IUser } from "@models/user-model";
 import { IFirmShares, MockFirmShares } from "@repos/firmShares";
 import UserRepo from "@repos/user-repo";
 import { MockBroker } from "@services/broker-mock";
@@ -8,8 +9,8 @@ describe('claimFreeShare', () => {
     const broker = new MockBroker();
     const userRepo = new UserRepo();
     const app = new App(firmShares, broker, userRepo);
-    const simpleUser = {
-        id: 123,
+    const simpleUser: IUser = {
+        id: "123",
         brokerAccountId: "some-broker-account",
         email: "someemail@email.com",
         name: "Some Name",
@@ -21,12 +22,12 @@ describe('claimFreeShare', () => {
     // it should error for user not found
     // it should give a time if no shares
     it("should error on non-user", async () => {
-        spyOn(userRepo, "getOne").and.resolveTo(null);
+        spyOn(userRepo, "getById").and.resolveTo(null);
         const r = await app.claimFreeShare("invalid-user");
         expect(r.result).toBe("user_not_found");
     });
     it("should provide a retry time when no shares are available", async () => {
-        spyOn(userRepo, "getOne").and.resolveTo(simpleUser)
+        spyOn(userRepo, "getById").and.resolveTo(simpleUser)
         spyOn(firmShares, "takeRandomShare").and.resolveTo(null);
         spyOn(broker, "isMarketOpen").and.
             resolveTo({open: true, nextClosingTime: "", nextOpeningTime: ""});
@@ -35,7 +36,7 @@ describe('claimFreeShare', () => {
         expect(actual).toEqual(expected)
     });
     it("should move a share to the user's broker account", async () => {
-        spyOn(userRepo, "getOne").and.resolveTo(simpleUser)
+        spyOn(userRepo, "getById").and.resolveTo(simpleUser)
         const takeShareSpy = spyOn(firmShares, "takeRandomShare").and.resolveTo(sampleShareName);
         const moveSpy = spyOn(broker, "moveSharesFromRewardsAccount").and.resolveTo({success: true});
 

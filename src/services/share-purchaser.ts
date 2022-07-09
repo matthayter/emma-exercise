@@ -9,13 +9,8 @@ export class SharePurchaser {
         private firmShares: IFirmShares,
     ) {}
 
+    // This method should only be run by a single host, e.g. via a cron job on my-prod-host1
     async checkAndBuy(): Promise<void> {
-        // Get lock
-        // Would need to avoid deadlock somehow if a host failed to release the lock.
-        if (!await this.firmShares.getPurchaseLock()) {
-            return;
-        }
-
         const positions = await this.broker.getRewardsAccountPositions();
         const numberOfSharesHeld = positions
             .map(p => p.quantity)
@@ -50,6 +45,5 @@ export class SharePurchaser {
 
         // Not shown: proper error handling.
         await Promise.all(purchaseOrders);
-        await this.firmShares.releasePurchaseLock();
     }
 }
