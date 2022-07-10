@@ -1,10 +1,9 @@
-import { SharePurchaser } from "./share-purchaser";
-
 export class MockBroker {
     private static shares: {[keys: string]: number} = {
         "msft": 5.6,
         "appl": 19.1,
         "tsla": 42.0,
+        "bliaq": 104.5,
     }
 
     heldShares: Array<{ tickerSymbol: string, quantity: number, sharePrice: number }> = [];
@@ -52,13 +51,13 @@ export class MockBroker {
         const shareSlotIndex = this.heldShares.findIndex(x => x.tickerSymbol === tickerSymbol);
         if (shareSlotIndex < 0) return {success: false}
         const shareSlot = this.heldShares[shareSlotIndex];
-        if (shareSlot.quantity <= 1) {
+        if (shareSlot.quantity < quantity) {
+            return {success: false}
+        } else if (shareSlot.quantity === quantity) {
             this.heldShares.splice(shareSlotIndex, 1);
         } else {
-            shareSlot.quantity -= 1;
+            shareSlot.quantity -= quantity;
         }
-        return Promise.resolve({
-            success: true,
-        })
+        return {success: true}
     }
 }

@@ -1,47 +1,21 @@
-// import cookieParser from 'cookie-parser';
-// import morgan from 'morgan';
-import path from 'path';
-// import helmet from 'helmet';
-
-import express, { NextFunction, Request, Response } from 'express';
-// import StatusCodes from 'http-status-codes';
+import express, { Request, Response } from 'express';
 import 'express-async-errors';
 import "./repos/firmShares";
-import {FirmSharesJsonDb, MockFirmShares} from './repos/firmShares';
+import { FirmSharesJsonDb } from './repos/firmShares';
 import { MockBroker } from './services/broker-mock';
-import UserRepo from '@repos/user-repo';
-import "./services/broker-mock";
+import { UserRepo } from '@repos/user-repo';
 import { App } from './app';
 
-// import apiRouter from './routes/api';
-// import logger from 'jet-logger';
-// import { CustomError } from '@shared/errors';
-
-
-// Constants
 const app = express();
-
 
 /***********************************************************************************
  *                                  Middlewares
  **********************************************************************************/
 
-// Common middlewares
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
-// app.use(cookieParser());
 
-// Show routes called in console during development
-// if (process.env.NODE_ENV === 'development') {
-//     app.use(morgan('dev'));
-// }
-
-// Security (helmet recommended in express docs)
-// if (process.env.NODE_ENV === 'production') {
-//     app.use(helmet());
-// }
-
-// Production dependencies.
+// Manual dependency injection, for now.
 const firmShares = new FirmSharesJsonDb();
 const broker = new MockBroker();
 const usersRepo = new UserRepo();
@@ -68,5 +42,4 @@ app.post("/claim-free-share", async (req: Request, res: Response) => {
     }
 });
 
-// Export here and start in a diff file (for testing).
 export default app;

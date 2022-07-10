@@ -1,11 +1,11 @@
 import { IUser } from "@models/user-model";
-import { IFirmShares, MockFirmShares } from "@repos/firmShares";
-import UserRepo from "@repos/user-repo";
+import { MockFirmShares } from "@repos/firmShares";
+import { UserRepo } from "@repos/user-repo";
 import { MockBroker } from "@services/broker-mock";
 import { App, ClaimFreeShareResult } from "src/app";
 
 describe('claimFreeShare', () => {
-    const firmShares = new MockFirmShares([]);
+    const firmShares = new MockFirmShares();
     const broker = new MockBroker();
     const userRepo = new UserRepo();
     const app = new App(firmShares, broker, userRepo);
@@ -42,6 +42,7 @@ describe('claimFreeShare', () => {
 
         const actual = await app.claimFreeShare("some-user");
 
+        expect(actual).toEqual({result: "ok"});
         expect(takeShareSpy).toHaveBeenCalledTimes(1);
         expect(moveSpy).toHaveBeenCalledOnceWith(simpleUser.brokerAccountId, sampleShareName, 1);
     });

@@ -19,6 +19,7 @@ export class SharePurchaser {
         const sharesPerPurchaseBatch = this.config.shareDistribution
             .map(p => p.quantity)
             .reduce((a, b) => a + b);
+        // TODO: Consider buy multiples of batches, instead of buying single batches multiple times.
         while (numberOfSharesHeld < this.config.minShares) {
             await this.buyDistributionSetOfShares();
             numberOfSharesHeld += sharesPerPurchaseBatch;

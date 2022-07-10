@@ -1,5 +1,5 @@
 import { IFirmShares } from "@repos/firmShares";
-import UserRepo from "@repos/user-repo";
+import { UserRepo } from "@repos/user-repo";
 import { MockBroker } from "@services/broker-mock";
 
 export class App {

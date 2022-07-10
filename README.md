@@ -1,10 +1,27 @@
 Install
 =======
-TODO
+```
+npm install
+```
 
 Run
 ===
 TODO
+
+Strategy
+========
+A core part of this problem was choosing a strategy to ensure a controllable cost of the distributed shares (and therefore a controlled cost-per-acquisition). Three methods came to mind:
+1. Probabalistic: generate a random number for each share-claim, and choose the value-bucket from that. Shares are purchased to ensure each bucket has available shares in the Firm's account.
+2. Fixed purchase, random choice: Buy shares in a fixed distribution (e.g. 95 low-value, 3 medium-value, 2 high-value), then choose a random share from the Firm's broker account on each share-claim event.
+3. Fixed purchase, shuffled distribution: Puchase shares as (2.), but shuffle the new purchases and then maintain the shuffled list (which becomes a queue). Allocate shares from the front of the queue as needed.
+
+Approach 3. was chosen, due to the following benefits:
+- Data-oriented: more of the complexity of the implementation is pushed into the data-structures (the additional shuffled list) which are easily inspectable. It feels more difficult to reason about the alogoithms in (1.) and (2.) than it is to inspect the data-structures in (3.), and the algorithms are comparitively simpler (shuffling & queue-pop).
+- Easier race-condition handling: Maintaining the shuffled list in a ACID-compliant SQL database (not implemented here) allows trivial resolution of race-conditions when multiple hosts are allocating shares from the Firm's account, in the case where the Broker's API doesn't provide idempotency and locking (as is the case in this mock example).
+- Stronger guarentees of cost-control. Strategy (1.) has the issue of possible under- or over-costing due to its probabilistic nature.
+
+And drawbacks:
+- (3.) has the extra complexity of keeping the shuffled list (which is effectively an index on the Firm's Broker account) in-sync with the broker account. If shares are removed from the Broker account via another method, unexpected errors will occur during allocation that may be hard to resolve. This could be mitigated with a better Broker API that e.g. provides unique ids for each share.
 
 Assumptions
 ===========
