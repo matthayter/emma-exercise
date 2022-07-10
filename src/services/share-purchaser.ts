@@ -14,11 +14,11 @@ export class SharePurchaser {
         const positions = await this.broker.getRewardsAccountPositions();
         let numberOfSharesHeld = positions
             .map(p => p.quantity)
-            .reduce((a, b) => a + b);
+            .reduce((a, b) => a + b, 0);
 
         const sharesPerPurchaseBatch = this.config.shareDistribution
             .map(p => p.quantity)
-            .reduce((a, b) => a + b);
+            .reduce((a, b) => a + b, 0);
         // TODO: Consider buy multiples of batches, instead of buying single batches multiple times.
         while (numberOfSharesHeld < this.config.minShares) {
             await this.buyDistributionSetOfShares();

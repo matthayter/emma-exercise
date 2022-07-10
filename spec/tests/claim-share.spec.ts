@@ -17,10 +17,6 @@ describe('claimFreeShare', () => {
     }
     const sampleShareName = "someShareSymbol";
 
-    // it should remove a share from the list
-    // it should add a share to the user.
-    // it should error for user not found
-    // it should give a time if no shares
     it("should error on non-user", async () => {
         spyOn(userRepo, "getById").and.resolveTo(null);
         const r = await app.claimFreeShare("invalid-user");

@@ -35,6 +35,6 @@ export class MockFirmShares implements IFirmShares {
     async takeRandomShare(): Promise<string | null> {
         return null;
     }
-    async addRecordOfPurchases(purchases: {symbol: string, price: number, quantity: number}[]): Promise<void> {
+    async addRecordOfPurchases(_purchases: {symbol: string, price: number, quantity: number}[]): Promise<void> {
     }
 }

@@ -2,8 +2,8 @@ export class MockBroker {
     private static shares: {[keys: string]: number} = {
         "msft": 5.6,
         "appl": 19.1,
-        "tsla": 42.0,
         "bliaq": 104.5,
+        "tsla": 42.0,
     }
 
     heldShares: Array<{ tickerSymbol: string, quantity: number, sharePrice: number }> = [];
@@ -16,7 +16,6 @@ export class MockBroker {
 
     // To fetch the latest price for an asset
     async getLatestPrice(tickerSymbol: string): Promise<{ sharePrice: number }> {
-        // TODO: stub
         return {sharePrice: MockBroker.shares[tickerSymbol] || 0.0}
     }
 
@@ -37,6 +36,7 @@ export class MockBroker {
         if (!MockBroker.shares[tickerSymbol]) {
             return {success: false, sharePricePaid: 0};
         }
+        console.log("Purchasing ", quantity, " of ", tickerSymbol);
         this.heldShares.push({tickerSymbol, quantity, sharePrice: MockBroker.shares[tickerSymbol]});
         return {success: true, sharePricePaid: MockBroker.shares[tickerSymbol]}
     }
