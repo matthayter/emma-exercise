@@ -26,7 +26,7 @@ export class SharePurchaser {
         }
     }
 
-    async buyDistributionSetOfShares() {
+    private async buyDistributionSetOfShares() {
         // Not shown: proper error handling.
         const tradableSymbols = (await this.broker.listTradableAssets()).map(x => x.tickerSymbol);
         const priceReqs = tradableSymbols.map(s => this.broker.getLatestPrice(s));
