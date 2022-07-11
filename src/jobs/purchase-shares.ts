@@ -1,6 +1,6 @@
-import './pre-start'; // Must be the first import
-import config from 'src/config';
+import '../pre-start'; // Must be the first import
 import { SharePurchaser } from "@services/share-purchaser";
+import config from 'src/config';
 import { MockBroker } from '@services/broker-mock';
 import { FirmSharesJsonDb } from '@repos/firmShares';
 

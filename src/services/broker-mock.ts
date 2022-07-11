@@ -51,6 +51,7 @@ export class MockBroker {
         const shareSlotIndex = this.heldShares.findIndex(x => x.tickerSymbol === tickerSymbol);
         if (shareSlotIndex < 0) return {success: false}
         const shareSlot = this.heldShares[shareSlotIndex];
+        console.log(`Broker: Moving ${quantity} share(s) of ${tickerSymbol} to user ${toAccount}`)
         if (shareSlot.quantity < quantity) {
             return {success: false}
         } else if (shareSlot.quantity === quantity) {

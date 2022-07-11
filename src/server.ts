@@ -4,7 +4,7 @@ import "./repos/firmShares";
 import { FirmSharesJsonDb } from './repos/firmShares';
 import { MockBroker } from './services/broker-mock';
 import { UserRepo } from '@repos/user-repo';
-import { App } from './app';
+import { App, ClaimFreeShareResult } from './app';
 
 const app = express();
 
@@ -21,10 +21,16 @@ const broker = new MockBroker();
 const usersRepo = new UserRepo();
 const prodApp = new App(firmShares, broker, usersRepo);
 
+// Clear any shares from previous session to get mockBroker and DB back in sync.
+firmShares.devOnlyClearShares();
+
 app.post("/claim-free-share", async (req: Request, res: Response) => {
     // Normally, the user would come from an Auth middleware
     const userId: string = req.body["userId"];
-    const result = await prodApp.claimFreeShare(userId);
+    console.log("User id: ", userId);
+    const promise = prodApp.claimFreeShare(userId);
+    const result = await promise;
+    console.log("Result: ", result);
     switch (result.result) {
         case "user_not_found":
             res.sendStatus(404); // Or something appropriate to the Auth flows

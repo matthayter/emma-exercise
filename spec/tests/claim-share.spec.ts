@@ -12,8 +12,6 @@ describe('claimFreeShare', () => {
     const simpleUser: IUser = {
         id: "123",
         brokerAccountId: "some-broker-account",
-        email: "someemail@email.com",
-        name: "Some Name",
     }
     const sampleShareName = "someShareSymbol";
 

@@ -29,6 +29,12 @@ export class FirmSharesJsonDb implements IFirmShares {
         await orm.saveDb(db);
     }
 
+    async devOnlyClearShares(): Promise<void> {
+        const db = await orm.openDb();
+        db.sharesAvailable = [];
+        await orm.saveDb(db);
+    }
+
 }
 
 export class MockFirmShares implements IFirmShares {

@@ -36,6 +36,7 @@ describe("sharePurchaser", () => {
 
     it("purchases shares in the happy path", async () => {
         const buySharesSpy = spyOn(broker, "buySharesInRewardsAccount").and.callThrough();
+        const addSharesSpy = spyOn(firmShares, "addRecordOfPurchases");
         // spyOnAllFunctions(broker);
         await purchaser.checkAndBuy();
 
@@ -44,6 +45,7 @@ describe("sharePurchaser", () => {
         expect(buySharesSpy).toHaveBeenCalledWith("appl", 3);
         expect(buySharesSpy).toHaveBeenCalledWith("tsla", 2);
         expect(buySharesSpy).toHaveBeenCalledTimes(3);
+        expect(addSharesSpy).toHaveBeenCalled();
         buySharesSpy.calls.reset();
 
         await purchaser.checkAndBuy();

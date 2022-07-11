@@ -55,5 +55,6 @@ export class SharePurchaser {
         // Not shown: proper error handling.
         await Promise.all(purchaseOrders);
 
+        this.firmShares.addRecordOfPurchases(purchases);
     }
 }
