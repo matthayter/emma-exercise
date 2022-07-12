@@ -16,7 +16,7 @@ export class UserRepo {
     }
     getById(userId: string): Promise<IUser | null> {
         return new Promise((resolve, reject) => {
-            this.db.get("SELECT user SET claims = claims - 1 WHERE id = ?", userId, (err, row) => {
+            this.db.get("SELECT * FROM user WHERE id = ?", userId, (err, row) => {
                 if (err !== null) {
                     reject(err);
                 } else {

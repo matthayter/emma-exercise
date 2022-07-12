@@ -13,12 +13,6 @@ export function createMockDb(): Promise<Database> {
             userStmt.run("someOtherUser", "broker2", 1);
             userStmt.finalize();
 
-            const shareStmt = db.prepare("INSERT INTO share VALUES (?)");
-            for (let i = 0; i < 5; i++) {
-                shareStmt.run("msft");
-            }
-            shareStmt.finalize();
-
             resolve(db);
         });
     });

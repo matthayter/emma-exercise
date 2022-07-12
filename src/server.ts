@@ -54,7 +54,7 @@ const buildApp = async (): Promise<Express> => {
     if (process.env.NODE_ENV === "development") {
         const sharePurchaser = new SharePurchaser(config, broker, firmShares);
         // Handy for playing around in development, though better to just write tests.
-        // In prod, this would be run via a cronjob or similar on a single host.
+        // In prod (when using a proper DB), this would be run via a cronjob or similar on a single host.
         app.post("/check-and-buy-shares", async (req: Request, res: Response) => {
             try {
                 await sharePurchaser.checkAndBuy();

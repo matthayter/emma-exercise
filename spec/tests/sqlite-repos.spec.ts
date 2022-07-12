@@ -1,6 +1,8 @@
+import { IUser } from "@models/user-model";
 import { FirmSharesSqlite } from "@repos/firmShares";
 import { createMockDb } from "@repos/mock-db-data";
 import { UserRepo } from "@repos/user-repo";
+import { Database } from "sqlite3";
 
 describe("FirmSharesSqliteDb", () => {
     it("adds new shares to tracking", async () => {
@@ -43,26 +45,35 @@ describe("FirmSharesSqliteDb", () => {
     });
 });
 describe("UserRepoSqlite", () => {
-    it("decrements a user's claims to zero", async () => {
-        const db = await createMockDb();
-        await cbToPromise<void>((cb) => db.run("DELETE FROM user", cb));
-        await cbToPromise<void>((cb) => db.run(
-            "INSERT INTO user VALUES (?, ?, ?), (?, ?, ?)",
-            "someUser", "broker1", 5,
-            "someOtherUser", "broker2", 1,
-            cb));
-        const userRepo = new UserRepo(db);
+    describe("with a mock user table", () => {
+        let db: Database;
+        let userRepo: UserRepo;
+        beforeEach(async () => {
+            db = await createMockDb();
+            await cbToPromise<void>((cb) => db.run("DELETE FROM user", cb));
+            await cbToPromise<void>((cb) => db.run(
+                "INSERT INTO user VALUES (?, ?, ?), (?, ?, ?)",
+                "someUser", "broker1", 5,
+                "someOtherUser", "broker2", 1,
+                cb));
+            userRepo = new UserRepo(db);
+        })
+        it("gets a user", async () => {
+            const user = (await userRepo.getById("someUser")) as IUser;
+            expect(user).toEqual({id: "someUser", brokerAccountId: "broker1", claims: 5});
+        });
+        it("decrements a user's claims to zero", async () => {
+            await userRepo.decrementShareClaims("someUser");
+            await userRepo.decrementShareClaims("someUser");
+            await userRepo.decrementShareClaims("someOtherUser");
+            await userRepo.decrementShareClaims("someOtherUser");
 
-        userRepo.decrementShareClaims("someUser");
-        userRepo.decrementShareClaims("someUser");
-        userRepo.decrementShareClaims("someOtherUser");
-        userRepo.decrementShareClaims("someOtherUser");
-
-        const user = await cbToPromise<any>((cb) => db.get("SELECT * FROM user WHERE id = ?", "someUser", cb));
-        const user2 = await cbToPromise<any>((cb) => db.get("SELECT * FROM user WHERE id = ?", "someOtherUser", cb));
-        expect(user.claims).toEqual(4);
-        expect(user2.claims).toEqual(0);
-    });
+            const user = await cbToPromise<any>((cb) => db.get("SELECT * FROM user WHERE id = ?", "someUser", cb));
+            const user2 = await cbToPromise<any>((cb) => db.get("SELECT * FROM user WHERE id = ?", "someOtherUser", cb));
+            expect(user.claims).toEqual(3);
+            expect(user2.claims).toEqual(0);
+        });
+    })
 });
 
 // Quick helpers for Callbacks -> promise.
