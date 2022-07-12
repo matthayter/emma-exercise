@@ -1,14 +1,10 @@
 import express, { Express, Request, Response } from 'express';
-import 'express-async-errors';
-import "./repos/firmShares";
-import { FirmSharesJsonDb, FirmSharesSqlite } from './repos/firmShares';
-import { MockBroker } from './services/broker-mock';
+import { App } from './app';
+import { FirmSharesSqlite } from '@repos/firmShares';
+import { MockBroker } from '@services/broker-mock';
 import { UserRepo } from '@repos/user-repo';
-import { App, ClaimFreeShareResult } from './app';
-import { env } from 'process';
 import { SharePurchaser } from '@services/share-purchaser';
 import config from './config';
-import { Http2ServerResponse } from 'http2';
 import { createMockDb } from '@repos/mock-db-data';
 
 const app: Express = express();
@@ -57,7 +53,7 @@ const buildApp = async (): Promise<Express> => {
     
     if (process.env.NODE_ENV === "development") {
         const sharePurchaser = new SharePurchaser(config, broker, firmShares);
-        // Handy for playing around in development. Not needed if your tests work properly!
+        // Handy for playing around in development, though better to just write tests.
         // In prod, this would be run via a cronjob or similar on a single host.
         app.post("/check-and-buy-shares", async (req: Request, res: Response) => {
             try {

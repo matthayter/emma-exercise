@@ -1,8 +1,5 @@
 import { IUser } from '@models/user-model';
-import { randomUUID } from 'crypto';
 import { Database } from 'sqlite3';
-import orm from './mock-orm';
-
 
 export class UserRepo {
     constructor(private db: Database) {}
