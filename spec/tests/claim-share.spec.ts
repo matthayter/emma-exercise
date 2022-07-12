@@ -7,11 +7,12 @@ import { App, ClaimFreeShareResult } from "src/app";
 describe('claimFreeShare', () => {
     const firmShares = new MockFirmShares();
     const broker = new MockBroker();
-    const userRepo = new UserRepo();
+    const userRepo = new UserRepo(null!);
     const app = new App(firmShares, broker, userRepo);
     const simpleUser: IUser = {
         id: "123",
         brokerAccountId: "some-broker-account",
+        claims: 5,
     }
     const sampleShareName = "someShareSymbol";
 
@@ -19,6 +20,11 @@ describe('claimFreeShare', () => {
         spyOn(userRepo, "getById").and.resolveTo(null);
         const r = await app.claimFreeShare("invalid-user");
         expect(r.result).toBe("user_not_found");
+    });
+    it("should error if user has no claims available", async () => {
+        spyOn(userRepo, "getById").and.resolveTo({...simpleUser, claims: 0});
+        const r = await app.claimFreeShare("some-user");
+        expect(r.result).toBe("no_claims_left");
     });
     it("should provide a retry time when no shares are available", async () => {
         spyOn(userRepo, "getById").and.resolveTo(simpleUser)
@@ -31,6 +37,7 @@ describe('claimFreeShare', () => {
     });
     it("should move a share to the user's broker account", async () => {
         spyOn(userRepo, "getById").and.resolveTo(simpleUser)
+        const decrementSpy = spyOn(userRepo, "decrementShareClaims");
         const takeShareSpy = spyOn(firmShares, "takeRandomShare").and.resolveTo(sampleShareName);
         const moveSpy = spyOn(broker, "moveSharesFromRewardsAccount").and.resolveTo({success: true});
 
@@ -39,5 +46,6 @@ describe('claimFreeShare', () => {
         expect(actual).toEqual({result: "ok"});
         expect(takeShareSpy).toHaveBeenCalledTimes(1);
         expect(moveSpy).toHaveBeenCalledOnceWith(simpleUser.brokerAccountId, sampleShareName, 1);
+        expect(decrementSpy).toHaveBeenCalledTimes(1);
     });
 });

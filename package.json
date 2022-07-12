@@ -62,6 +62,7 @@
     "build.ts"
   ],
   "dependencies": {
+    "@types/sqlite3": "^3.1.8",
     "command-line-args": "^5.2.1",
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.0.1",
@@ -72,7 +73,8 @@
     "jet-logger": "^1.1.5",
     "jsonfile": "^6.1.0",
     "module-alias": "^2.2.2",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "sqlite3": "^5.0.8"
   },
   "devDependencies": {
     "@types/command-line-args": "^5.2.0",

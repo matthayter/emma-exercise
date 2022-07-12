@@ -3,4 +3,5 @@
 export interface IUser {
     id: string;
     brokerAccountId: string;
+    claims: number;
 }

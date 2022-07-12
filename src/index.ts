@@ -8,6 +8,8 @@ const serverStartMsg = 'Express server started on port: ',
         port = (process.env.PORT || 3000);
 
 // Start server
-server.listen(port, () => {
-    logger.info(serverStartMsg + port);
-});
+(async () => {
+    (await server).listen(port, () => {
+        logger.info(serverStartMsg + port);
+    });
+})();

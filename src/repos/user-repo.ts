@@ -1,21 +1,36 @@
 import { IUser } from '@models/user-model';
 import { randomUUID } from 'crypto';
+import { Database } from 'sqlite3';
 import orm from './mock-orm';
 
 
 export class UserRepo {
-    async decrementShareClaims(userId: number): Promise<void> {
-        // TODO
+    constructor(private db: Database) {}
+    decrementShareClaims(userId: string): Promise<void> {
+        return new Promise((resolve, reject) => {
+            this.db.run("UPDATE user SET claims = claims - 1 WHERE id = ? AND claims > 0", userId, (err) => {
+                if (err !== null) {
+                    reject(err);
+                } else {
+                    resolve();
+                }
+            });
+        });
     }
-    /**
-     * Get one user.
-     * 
-     * @param email 
-     * @returns 
-     */
-    async getById(userId: string): Promise<IUser | null> {
-        const db = await orm.openDb();
-        return (db.users as IUser[]).
-            find(u => u.id === userId) || null;
+    getById(userId: string): Promise<IUser | null> {
+        return new Promise((resolve, reject) => {
+            this.db.get("SELECT user SET claims = claims - 1 WHERE id = ?", userId, (err, row) => {
+                if (err !== null) {
+                    reject(err);
+                } else {
+                    if (!row) { resolve(null); return; }
+                    resolve({
+                        id: row.id,
+                        brokerAccountId: row.brokerAccount,
+                        claims: row.claims,
+                    });
+                }
+            });
+        });
     }
 }
