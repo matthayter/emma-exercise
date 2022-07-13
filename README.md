@@ -49,6 +49,13 @@ And drawbacks:
 - (3.) has the extra complexity of keeping the shuffled list (which is effectively an index on the Firm's Broker account) in-sync with the broker account. If shares are removed from the Broker account via another method, unexpected errors will occur during allocation that may be hard to resolve. This could be mitigated with a better Broker API that e.g. provides unique ids for each share.
 - (3.) is open to cheating by internal actors or those with access to the shuffled list.
 
+Bonus tasks
+===========
+
+I ran out of time to try these, but I feel like I wouldn't have had a clear idea for a strategy because the pricing strategy chosen should largely rely on psychology, with which I am  not familiar. That is, the question needing to be answered to form an effective strategy is "what kind of prizes make for an attractive proposition given a certain total cost of prizes?". This would be similar to a gambling or lottery kind of situation.
+
+It would be trivial to simply choose shares that bring the CPA back into alignment for each share, but then customers would be allocated very similarly-priced shares, which feels uninteresting and contra to the above. Likewise with the share-portions question.
+
 Assumptions
 ===========
 
