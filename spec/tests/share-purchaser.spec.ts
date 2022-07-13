@@ -62,5 +62,13 @@ describe("sharePurchaser", () => {
         await purchaser.checkAndBuy();
         expect(buySharesSpy).toHaveBeenCalledTimes(0);
     })
+    it ("doesn't try to buy shares when the market is closed", async () => {
+        const buySharesSpy = spyOn(broker, "buySharesInRewardsAccount").and.callThrough();
+        spyOn(broker, "isMarketOpen").and.resolveTo({open: false, nextClosingTime: "", nextOpeningTime: ""});
+
+        await purchaser.checkAndBuy();
+
+        expect(buySharesSpy).toHaveBeenCalledTimes(0);
+    });
     // Not included: tests of all the various error conditions.
 });

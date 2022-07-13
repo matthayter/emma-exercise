@@ -11,6 +11,10 @@ export class SharePurchaser {
 
     // This method should only be run by a single host, e.g. via a cron job on my-prod-host1
     async checkAndBuy(): Promise<void> {
+        const marketState = await this.broker.isMarketOpen();
+        if (!marketState.open) {
+            return;
+        }
         const positions = await this.broker.getRewardsAccountPositions();
         let numberOfSharesHeld = positions
             .map(p => p.quantity)
